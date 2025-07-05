@@ -219,6 +219,31 @@
         alert("File uploaded and saved!");
         await checkFileStatus();
       };
+      // document.getElementById("viewBtn").onclick = async () => {
+      //   const { data: dbData, error } = await supabase
+      //     .from("documents")
+      //     .select("*")
+      //     .eq("user_id", userId)
+      //     .eq("file_name", docName)
+      //     .single();
+
+      //   if (error || !dbData) {
+      //     alert("No document available to view.");
+      //     viewer.src = "";
+      //     viewer.style.display = "none";
+      //     return;
+      //   }
+
+      //   const { data } = supabase.storage
+      //     .from(bucketName)
+      //     .getPublicUrl(filePath);
+
+      //   // Add cache buster
+      //   const cacheBustedUrl = `${data.publicUrl}?t=${new Date().getTime()}`;
+
+      //   viewer.src = cacheBustedUrl;
+      //   viewer.style.display = "block";
+      // };
       document.getElementById("viewBtn").onclick = async () => {
         const { data: dbData, error } = await supabase
           .from("documents")
@@ -237,11 +262,21 @@
         const { data } = supabase.storage
           .from(bucketName)
           .getPublicUrl(filePath);
-
-        // Add cache buster
         const cacheBustedUrl = `${data.publicUrl}?t=${new Date().getTime()}`;
 
-        viewer.src = cacheBustedUrl;
+        // Detect mobile device
+        const isMobile = /Android|webOS|iPhone|iPad|iPod/i.test(
+          navigator.userAgent
+        );
+
+        // Use Google Docs Viewer on mobile
+        const viewerUrl = isMobile
+          ? `https://docs.google.com/gview?url=${encodeURIComponent(
+              cacheBustedUrl
+            )}&embedded=true`
+          : cacheBustedUrl;
+
+        viewer.src = viewerUrl;
         viewer.style.display = "block";
       };
 
