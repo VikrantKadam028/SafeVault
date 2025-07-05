@@ -34,21 +34,43 @@
         flex-direction: column;
         padding: 20px;
       }
-      .logo {
+
+      .topbar {
         width: 100%;
         display: flex;
-        align-items: start;
+        justify-content: space-between;
+        align-items: center;
         margin-top: 15px;
-        flex-direction: column;
       }
+
       .logo p {
         font-size: 25px;
         color: rgb(0, 0, 126);
         font-weight: 800;
+        margin: 0;
+        line-height: 1.8;
       }
+
       .logo h4 {
-        font-size: 20px;
+        font-size: 18px;
+        margin: 0;
       }
+
+      .logout-btn {
+        padding: 8px 16px;
+        background-color: #dc3545;
+        border: none;
+        color: white;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      .logout-btn:hover {
+        background-color: #c82333;
+      }
+
       .dashboard {
         width: 100%;
         height: calc(100vh - 200px);
@@ -90,10 +112,18 @@
   <body>
     <div class="container">
       <div class="main">
-        <div class="logo">
-          <p>SafeVault.</p>
-          <h4>Your Personal Documents</h4>
+        <!-- Logo & Logout -->
+        <div class="topbar">
+          <div class="logo">
+            <p>SafeVault.</p>
+            <h4>Your Personal Documents</h4>
+          </div>
+          <button class="logout-btn" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i>
+          </button>
         </div>
+
+        <!-- Dashboard Cards -->
         <div class="dashboard">
           <a href="document.html?doc=10th-marksheet" class="box1">
             <img src="assests/certificate.png" />
@@ -130,5 +160,32 @@
         </div>
       </div>
     </div>
+
+    <!-- Supabase Logout Script -->
+    <script type="module">
+      import { createClient } from "https://esm.sh/@supabase/supabase-js";
+
+      const supabaseUrl = "https://tjyazmklqebvbeugawkv.supabase.co";
+      const supabaseKey =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRqeWF6bWtscWVidmJldWdhd2t2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExMTYxNDUsImV4cCI6MjA2NjY5MjE0NX0.fH-cFD6Ygp6UxkcF10P2LjkJl2nrq3DOUIdyvWaKoWU";
+
+      const supabase = createClient(supabaseUrl, supabaseKey);
+
+      document
+        .getElementById("logoutBtn")
+        .addEventListener("click", async () => {
+          const { error } = await supabase.auth.signOut();
+
+          // Clear localStorage
+          localStorage.removeItem("isRegistered");
+
+          if (!error) {
+            window.location.href = "index.html";
+          } else {
+            alert("Logout failed. Try again.");
+            console.error(error);
+          }
+        });
+    </script>
   </body>
 </html>
